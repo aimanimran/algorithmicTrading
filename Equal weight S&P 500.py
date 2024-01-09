@@ -1,32 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[1]:
-
-
 import numpy as np #computing
 import pandas as pd #data science
 import requests #HTTP requests
 import xlsxwriter
 import math
 
-
-# In[2]:
-
-
 stocks = pd.read_csv('sp_500_stocks.csv')
 from secrets import ALPHA_VANTAGE_API
 
-
-# In[5]:
-
-
 my_columns = ['Ticker', 'Stock Price', 'Market Capitalization', 'Number of Shares to Buy']
 final_dataframe = pd.DataFrame(columns = my_columns)
-
-
-# In[7]:
-
 
 final_dataframe = pd.DataFrame(columns = my_columns)
 count = 0
@@ -68,18 +52,6 @@ for symbol in stocks['Ticker']:
     if symbol=='ZTS':
         break
         
-final_dataframe
-
-
-# In[ ]:
-
-
-final_dataframe
-
-
-# In[11]:
-
-
 portfolio_size = input("Enter the value of your portfolio:")
 
 try:
@@ -88,24 +60,13 @@ except ValueError:
     print("That's not a number! \n Try again:")
     portfolio_size = input("Enter the value of your portfolio:")
 
-
-# In[12]:
-
-
 position_size = float(portfolio_size) / len(final_dataframe.index)
 for i in range(0, len(final_dataframe['Ticker'])-1):
     final_dataframe.loc[i, 'Number Of Shares to Buy'] = math.floor(position_size / final_dataframe['Price'][i])
 final_dataframe
 
-
-# In[13]:
-
-
 writer = pd.ExcelWriter('recommended_trades.xlsx', engine='xlsxwriter')
 final_dataframe.to_excel(writer, sheet_name='Recommended Trades', index = False)
-
-
-# In[ ]:
 
 
 background_color = '#0a0a23'
@@ -137,10 +98,6 @@ integer_format = writer.book.add_format(
         }
     )
 
-
-# In[ ]:
-
-
 column_formats = { 
                     'A': ['Ticker', string_format],
                     'B': ['Price', dollar_format],
@@ -151,9 +108,6 @@ column_formats = {
 for column in column_formats.keys():
     writer.sheets['Recommended Trades'].set_column(f'{column}:{column}', 20, column_formats[column][1])
     writer.sheets['Recommended Trades'].write(f'{column}1', column_formats[column][0], string_format)
-
-
-# In[ ]:
 
 
 writer.save()
